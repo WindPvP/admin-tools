@@ -1,5 +1,6 @@
 package com.windpvp.admin;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,29 +21,45 @@ public class VanishCommand implements CommandExecutor {
             return true;
         }
 
-        Player target;
-
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage("Console must specify a player: /vanish <name>");
                 return true;
             }
-            target = (Player) sender;
-        } else {
-            target = Bukkit.getPlayer(args[0]);
+            Player self = (Player) sender;
+            if (plugin.isVanished(self)) {
+                plugin.unvanishPlayer(self);
+            } else {
+                plugin.vanishPlayer(self);
+            }
+            return true;
         }
 
-        if (target == null) {
+        String targetName = args[0];
+        Player onlineTarget = Bukkit.getPlayerExact(targetName);
+        if (onlineTarget != null) {
+            if (plugin.isVanished(onlineTarget)) {
+                plugin.unvanishPlayer(onlineTarget);
+                sender.sendMessage("§eUnvanished " + onlineTarget.getName());
+            } else {
+                plugin.vanishPlayer(onlineTarget);
+                sender.sendMessage("§aVanished " + onlineTarget.getName());
+            }
+            return true;
+        }
+
+        OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(targetName);
+        if (!offlineTarget.hasPlayedBefore()) {
             sender.sendMessage("§cPlayer not found.");
             return true;
         }
 
-        if (plugin.getVanishedPlayers().contains(target.getUniqueId())) {
-            plugin.unvanishPlayer(target);
-            if (sender != target) sender.sendMessage("§eUnvanished " + target.getName());
+        if (plugin.isVanished(offlineTarget.getUniqueId())) {
+            plugin.unvanishOfflinePlayer(offlineTarget.getUniqueId());
+            sender.sendMessage("§eUnvanished offline player " + offlineTarget.getName());
         } else {
-            plugin.vanishPlayer(target);
-            if (sender != target) sender.sendMessage("§aVanished " + target.getName());
+            plugin.vanishOfflinePlayer(offlineTarget.getUniqueId());
+            sender.sendMessage("§aVanished offline player " + offlineTarget.getName());
         }
 
         return true;

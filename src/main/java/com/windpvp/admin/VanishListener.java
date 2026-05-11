@@ -16,17 +16,11 @@ public class VanishListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player joined = event.getPlayer();
 
-        // 1. If the person joining is vanished, hide them from everyone
-        if (plugin.getVanishedPlayers().contains(joined.getUniqueId())) {
-            plugin.vanishPlayer(joined);
-            event.setJoinMessage(null); // Optional: hide join message
+        if (plugin.isVanished(joined)) {
+            plugin.vanishPlayer(joined, false);
+            event.setJoinMessage(null);
         }
 
-        // 2. Hide already-vanished players from the person who just joined
-        for (Player online : plugin.getServer().getOnlinePlayers()) {
-            if (plugin.getVanishedPlayers().contains(online.getUniqueId())) {
-                joined.hidePlayer(online);
-            }
-        }
+        plugin.hideVanishedPlayersFrom(joined);
     }
 }

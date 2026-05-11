@@ -1,0 +1,10 @@
+mysql:
+  enabled: false
+  host: 127.0.0.1
+  port: 3306
+  database: admintools
+  username: root
+  password: change-me
+  use-ssl: false
+  table: vanished_players
+  sync-interval-ticks: 200
