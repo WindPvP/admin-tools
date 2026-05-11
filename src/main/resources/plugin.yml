@@ -1,0 +1,11 @@
+name: admin-tools
+authors: ['windcolor']
+version: ${project.version} (build ${BUILD_NUMBER})
+main: com.windpvp.admin.AdminTools
+depend: [ ProtocolLib ]
+commands:
+  vanish:
+    description: Disappear :O
+    usage: /vanish
+    permission: admintools.vanish
+    aliases: [v]
