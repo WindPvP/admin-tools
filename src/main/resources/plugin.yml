@@ -6,6 +6,6 @@ depend: [ ProtocolLib ]
 commands:
   vanish:
     description: Disappear :O
-    usage: /vanish
+    usage: /vanish [player]
     permission: admintools.vanish
     aliases: [v]
