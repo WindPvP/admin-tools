@@ -5,4 +5,6 @@ mysql:
   database: admintools
   username: root
   password: change-me
+  use-ssl: false
   table: vanished_players
+  sync-interval-ticks: 200

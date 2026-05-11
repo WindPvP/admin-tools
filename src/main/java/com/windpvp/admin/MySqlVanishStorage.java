@@ -15,8 +15,11 @@ import java.util.logging.Level;
 
 public class MySqlVanishStorage {
 
+    private static final String DEFAULT_TABLE = "vanished_players";
+
     private final AdminTools plugin;
     private Connection connection;
+    private String tableName = DEFAULT_TABLE;
 
     public MySqlVanishStorage(AdminTools plugin) {
         this.plugin = plugin;
@@ -34,16 +37,23 @@ public class MySqlVanishStorage {
         String database = config.getString("mysql.database", "admintools");
         String username = config.getString("mysql.username", "root");
         String password = config.getString("mysql.password", "");
-        String table = config.getString("mysql.table", "vanished_players");
-        String jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&autoReconnect=true";
+        String configuredTable = config.getString("mysql.table", DEFAULT_TABLE);
+        if (configuredTable != null && configuredTable.matches("^[A-Za-z0-9_]+$")) {
+            tableName = configuredTable;
+        } else {
+            plugin.getLogger().warning("Invalid MySQL table name configured; falling back to " + DEFAULT_TABLE + ".");
+            tableName = DEFAULT_TABLE;
+        }
+        boolean useSsl = config.getBoolean("mysql.use-ssl", false);
+        String jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=" + useSsl;
 
         try {
             connection = DriverManager.getConnection(jdbcUrl, username, password);
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS `" + table + "` (" +
+                    "CREATE TABLE IF NOT EXISTS `" + tableName + "` (" +
                         "`player_uuid` VARCHAR(36) PRIMARY KEY, " +
-                        "`vanished` TINYINT(1) NOT NULL DEFAULT 1" +
+                        "`vanished` TINYINT(1) NOT NULL" +
                         ")"
                 );
             }
@@ -61,8 +71,7 @@ public class MySqlVanishStorage {
             return vanished;
         }
 
-        String table = plugin.getConfig().getString("mysql.table", "vanished_players");
-        String query = "SELECT player_uuid FROM `" + table + "` WHERE vanished = 1";
+        String query = "SELECT player_uuid FROM `" + tableName + "` WHERE vanished = 1";
         try (PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
@@ -84,8 +93,7 @@ public class MySqlVanishStorage {
             return;
         }
 
-        String table = plugin.getConfig().getString("mysql.table", "vanished_players");
-        String query = "REPLACE INTO `" + table + "` (player_uuid, vanished) VALUES (?, ?)";
+        String query = "REPLACE INTO `" + tableName + "` (player_uuid, vanished) VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, uuid.toString());
             statement.setBoolean(2, vanished);

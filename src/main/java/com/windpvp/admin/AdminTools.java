@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AdminTools extends JavaPlugin {
 
+    private static final long MIN_SYNC_INTERVAL_TICKS = 20L;
+
     private final Set<UUID> vanishedPlayers = ConcurrentHashMap.newKeySet();
     private VanishPacketListener packetListener;
     private MySqlVanishStorage vanishStorage;
@@ -106,7 +108,6 @@ public class AdminTools extends JavaPlugin {
     }
 
     private void hidePlayerFromOthers(Player player) {
-        vanishedPlayers.add(player.getUniqueId());
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (!online.equals(player)) {
                 online.hidePlayer(player);
@@ -121,6 +122,7 @@ public class AdminTools extends JavaPlugin {
     }
 
     private void startSyncTask() {
+        long intervalTicks = Math.max(MIN_SYNC_INTERVAL_TICKS, getConfig().getLong("mysql.sync-interval-ticks", 200L));
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
             if (vanishStorage == null) {
                 return;
@@ -128,7 +130,7 @@ public class AdminTools extends JavaPlugin {
 
             Set<UUID> dbVanished = vanishStorage.loadVanishedPlayers();
             Set<UUID> oldVanished = new HashSet<>(vanishedPlayers);
-            vanishedPlayers.clear();
+            vanishedPlayers.removeIf(uuid -> !dbVanished.contains(uuid));
             vanishedPlayers.addAll(dbVanished);
 
             Set<UUID> newlyVanished = new HashSet<>(dbVanished);
@@ -151,6 +153,6 @@ public class AdminTools extends JavaPlugin {
                     }
                 }
             });
-        }, 20L, 100L);
+        }, MIN_SYNC_INTERVAL_TICKS, intervalTicks);
     }
 }
