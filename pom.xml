@@ -44,11 +44,6 @@
 		</dependency>
 	</dependencies>
 
-	<ciManagement>
-		<system>jenkins</system>
-		<url>http://ci.citizensnpcs.co</url>
-	</ciManagement>
-
 	<build>
 		<defaultGoal>clean package install javadoc:javadoc</defaultGoal>
 		<resources>

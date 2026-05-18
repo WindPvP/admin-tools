@@ -4,6 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.windpvp.admin.vanish.MySqlVanishStorage;
+import com.windpvp.admin.vanish.VanishCommand;
+import com.windpvp.admin.vanish.VanishListener;
+import com.windpvp.admin.vanish.VanishPacketListener;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -29,11 +34,12 @@ public class AdminTools extends JavaPlugin {
             vanishedPlayers.addAll(vanishStorage.loadVanishedPlayers());
             startSyncTask();
         }
-
+        
         this.packetListener = new VanishPacketListener(this);
         getCommand("vanish").setExecutor(new VanishCommand(this));
         getServer().getPluginManager().registerEvents(new VanishListener(this), this);
 
+        // Bedrock compat
         getLogger().info("AdminTools enabled (1.8.8 ProtocolLib)");
     }
 

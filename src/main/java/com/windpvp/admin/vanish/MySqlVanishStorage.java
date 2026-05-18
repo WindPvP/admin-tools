@@ -1,6 +1,8 @@
-package com.windpvp.admin;
+package com.windpvp.admin.vanish;
 
 import org.bukkit.configuration.file.FileConfiguration;
+
+import com.windpvp.admin.AdminTools;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
