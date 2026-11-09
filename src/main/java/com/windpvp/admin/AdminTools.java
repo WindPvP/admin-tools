@@ -7,7 +7,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.windpvp.admin.vanish.MySqlVanishStorage;
 import com.windpvp.admin.vanish.VanishCommand;
 import com.windpvp.admin.vanish.VanishListener;
-import com.windpvp.admin.vanish.VanishPacketListener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +18,6 @@ public class AdminTools extends JavaPlugin {
     private static final long MIN_SYNC_INTERVAL_TICKS = 20L;
 
     private final Set<UUID> vanishedPlayers = ConcurrentHashMap.newKeySet();
-    private VanishPacketListener packetListener;
     private MySqlVanishStorage vanishStorage;
 
     @Override
@@ -34,13 +32,11 @@ public class AdminTools extends JavaPlugin {
             vanishedPlayers.addAll(vanishStorage.loadVanishedPlayers());
             startSyncTask();
         }
-        
-        this.packetListener = new VanishPacketListener(this);
+
         getCommand("vanish").setExecutor(new VanishCommand(this));
         getServer().getPluginManager().registerEvents(new VanishListener(this), this);
 
-        // Bedrock compat
-        getLogger().info("AdminTools enabled (1.8.8 ProtocolLib)");
+        getLogger().info("AdminTools enabled (Paper " + Bukkit.getMinecraftVersion() + ")");
     }
 
     @Override
@@ -89,7 +85,7 @@ public class AdminTools extends JavaPlugin {
     public void hideVanishedPlayersFrom(Player viewer) {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (isVanished(online) && !online.equals(viewer)) {
-                viewer.hidePlayer(online);
+                viewer.hidePlayer(this, online);
             }
         }
     }
@@ -116,14 +112,14 @@ public class AdminTools extends JavaPlugin {
     private void hidePlayerFromOthers(Player player) {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (!online.equals(player)) {
-                online.hidePlayer(player);
+                online.hidePlayer(this, player);
             }
         }
     }
 
     private void showPlayerToOthers(Player player) {
         for (Player online : Bukkit.getOnlinePlayers()) {
-            online.showPlayer(player);
+            online.showPlayer(this, player);
         }
     }
 

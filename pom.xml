@@ -12,29 +12,24 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkit.version>1.8.8-R0.1-SNAPSHOT</bukkit.version>
+		<maven.compiler.release>25</maven.compiler.release>
+		<paper.version>26.3.build.245-stable</paper.version>
 		<BUILD_NUMBER>7</BUILD_NUMBER>
 	</properties>
 
 	<repositories>
 		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
 		<!-- Basic Requirements -->
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
-			<version>1.8.8-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.dmulloy2</groupId>
-			<artifactId>ProtocolLib</artifactId>
-			<version>5.4.0</version>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>${paper.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -59,7 +54,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.4.2</version>
 				<configuration>
 					<finalName>admin-tools-${version}-b${BUILD_NUMBER}</finalName>
 				</configuration>
@@ -67,7 +62,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.6.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -81,19 +76,18 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>3.13.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<release>${maven.compiler.release}</release>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
+				<version>3.11.2</version>
 				<configuration>
 					<author>false</author>
-					<additionalparam>-Xdoclint:none</additionalparam>
+					<doclint>none</doclint>
 				</configuration>
 			</plugin>
 		</plugins>

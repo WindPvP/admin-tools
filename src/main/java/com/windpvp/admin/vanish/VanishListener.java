@@ -20,7 +20,7 @@ public class VanishListener implements Listener {
 
         if (plugin.isVanished(joined)) {
             plugin.vanishPlayer(joined, false);
-            event.setJoinMessage(null);
+            event.joinMessage(null);
         }
 
         plugin.hideVanishedPlayersFrom(joined);

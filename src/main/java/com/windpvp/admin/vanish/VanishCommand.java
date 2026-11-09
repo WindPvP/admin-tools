@@ -50,8 +50,9 @@ public class VanishCommand implements CommandExecutor {
             return true;
         }
 
-        OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(targetName);
-        if (!offlineTarget.hasPlayedBefore()) {
+        // Cache-only lookup: never blocks the main thread on a Mojang profile request.
+        OfflinePlayer offlineTarget = Bukkit.getOfflinePlayerIfCached(targetName);
+        if (offlineTarget == null || !offlineTarget.hasPlayedBefore()) {
             sender.sendMessage("§cPlayer not found.");
             return true;
         }
