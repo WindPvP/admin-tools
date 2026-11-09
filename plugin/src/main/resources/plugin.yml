@@ -2,6 +2,7 @@ name: admin-tools
 authors: ['windcolor']
 version: ${project.version} (build ${BUILD_NUMBER})
 main: com.windpvp.admin.AdminTools
+# Ignored by 1.8.8; tells Paper 26.3 not to load this as a legacy plugin.
 api-version: '26.3'
 commands:
   vanish:

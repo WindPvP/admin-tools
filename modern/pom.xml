@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.windpvp</groupId>
+		<artifactId>admin-tools-parent</artifactId>
+		<version>1.0</version>
+	</parent>
+
+	<artifactId>admin-tools-modern</artifactId>
+	<packaging>jar</packaging>
+	<name>admin-tools-modern</name>
+
+	<properties>
+		<!-- Only ever loaded on Paper 26.3+, which requires Java 25. -->
+		<maven.compiler.release>25</maven.compiler.release>
+	</properties>
+
+	<dependencies>
+		<!-- Paper first so its API wins over the 1.8.8 API core is compiled against. -->
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.windpvp</groupId>
+			<artifactId>admin-tools-core</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+</project>

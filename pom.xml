@@ -4,93 +4,99 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.windpvp</groupId>
-	<artifactId>admin-tools</artifactId>
-	<packaging>jar</packaging>
+	<artifactId>admin-tools-parent</artifactId>
+	<packaging>pom</packaging>
 	<version>1.0</version>
-	<name>admin-tools</name>
+	<name>admin-tools-parent</name>
 	<description>Admin utilities!</description>
+
+	<!--
+		One plugin jar that runs on both Spigot/Paper 1.8.8 and Paper 26.3.
+		  core   - all plugin logic, compiled for Java 8 against the 1.8.8 API
+		  modern - Paper 26.3 platform adapter, compiled for Java 25
+		  plugin - shades core + modern + the MySQL driver into the final jar
+		Building requires JDK 25 (the Paper 26.3 API is Java 25 bytecode).
+	-->
+	<modules>
+		<module>core</module>
+		<module>modern</module>
+		<module>plugin</module>
+	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>25</maven.compiler.release>
+		<legacy.api.version>1.8.8-R0.1-SNAPSHOT</legacy.api.version>
 		<paper.version>26.3.build.245-stable</paper.version>
 		<BUILD_NUMBER>7</BUILD_NUMBER>
 	</properties>
 
 	<repositories>
 		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
 			<id>papermc</id>
 			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
 	</repositories>
 
-	<dependencies>
-		<!-- Basic Requirements -->
-		<dependency>
-			<groupId>io.papermc.paper</groupId>
-			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<version>8.4.0</version>
-		</dependency>
-	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.spigotmc</groupId>
+				<artifactId>spigot-api</artifactId>
+				<version>${legacy.api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.papermc.paper</groupId>
+				<artifactId>paper-api</artifactId>
+				<version>${paper.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.mysql</groupId>
+				<artifactId>mysql-connector-j</artifactId>
+				<version>8.4.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<defaultGoal>clean package install javadoc:javadoc</defaultGoal>
-		<resources>
-			<resource>
-				<filtering>true</filtering>
-				<directory>${basedir}/src/main/resources</directory>
-				<includes>
-					<include>*.yml</include>
-				</includes>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.4.2</version>
-				<configuration>
-					<finalName>admin-tools-${version}-b${BUILD_NUMBER}</finalName>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.6.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<minimizeJar>false</minimizeJar>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.13.0</version>
-				<configuration>
-					<release>${maven.compiler.release}</release>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.2</version>
-				<configuration>
-					<author>false</author>
-					<doclint>none</doclint>
-				</configuration>
-			</plugin>
-		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.13.0</version>
+					<configuration>
+						<compilerArgs>
+							<arg>-Xlint:-options</arg>
+						</compilerArgs>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.4.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>3.6.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.11.2</version>
+					<configuration>
+						<author>false</author>
+						<doclint>none</doclint>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>
